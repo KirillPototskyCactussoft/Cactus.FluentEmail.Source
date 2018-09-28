@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -34,46 +33,44 @@ namespace FluentEmail.Source.Simple
         static void Main(string[] args)
         {
 
-            var template = new DefaultTemplate<Guid>
+            var template = new DefaultTemplate
             {
-                Id = Guid.NewGuid(),
                 Name = "test template 1",
                 Subject = "subject of tests template",
-                HtmlBodyTemplate = "body of tests temp-late",
+                HtmlBodyTemplate = "body of tests template",
                 PlainBodyTemplate = "hi)",
                 Priority = Priority.Normal,
                 Tag = "test tag",
-                IsHtml = false,
                 Language = CultureInfo.CurrentCulture,
-                FromAddress = "test@gmail.com",
+                FromAddress = "test@gmail.com"
             };
 
             CreateTemplate(template).Wait();
-            GetAndSentTemplate(template.Id).Wait();
+            GetAndSentTemplate(template.Name).Wait();
         }
 
-        private static async Task CreateTemplate(ITemplate<Guid> template)
+        private static async Task CreateTemplate(ITemplate template)
         {
             await TemplatesManager.Create(template);
         }
 
-        private static async Task Send(ITemplate<Guid> template)
+        private static async Task Send(ITemplate template)
         {
             var email = new Email(new RazorRenderer(), new SmtpSender(new SmtpClient
             {
                 Host = "smtp.gmail.com",
                 Port = 587,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("test@gmail.com", "1234"),
+                Credentials = new NetworkCredential("test1@cactussoft.com", "1234"),
                 EnableSsl = true
             }));
 
-            await email.UseTemplate(() => template).To("kirill.pototsky@cactussoft.biz").SendAsync();
+            await email.UseTemplate(() => template).To("test1@cactussoft.com").SendAsync();
         }
 
-        private static async Task GetAndSentTemplate(Guid templateId)
+        private static async Task GetAndSentTemplate(string templateName)
         {
-            var template = await TemplatesManager.GetById(templateId);
+            var template = await TemplatesManager.GetByName(templateName);
             await Send(template);
         }
     }

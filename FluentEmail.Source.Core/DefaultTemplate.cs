@@ -4,10 +4,8 @@ using FluentEmail.Source.Core.Interfaces;
 
 namespace FluentEmail.Source.Core
 {
-    public class DefaultTemplate<TKey> : ITemplate<TKey>
+    public class DefaultTemplate : ITemplate
     {
-        public TKey Id { get; set; }
-
         public string Name { get; set; }
 
         public string Subject { get; set; }
@@ -23,7 +21,5 @@ namespace FluentEmail.Source.Core
         public CultureInfo Language { get; set; }
 
         public string FromAddress { get; set; }
-
-        public bool IsHtml { get; set; }
     }
 }

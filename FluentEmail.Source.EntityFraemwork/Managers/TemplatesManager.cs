@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,25 +22,31 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
             _templatesRepository = templatesRepository;
         }
 
-        public async Task<IEnumerable<ITemplate<Guid>>> GetByLanguage(string language)
+        public async Task<ITemplate> GetByName(string name, string language = null)
         {
-            var entity = await _templatesRepository.GetQuerable().Where(x => x.Language == language).ToListAsync();
-            return entity.Select(CastToDefaultTemplate);
-        }
+            if (string.IsNullOrEmpty(name))
+            {
+                var errorMessage = "Wasn't set name of template";
+                _logger.Error(errorMessage);
+                throw new ArgumentNullException(nameof(name), errorMessage);
+            }
 
-        public async Task<ITemplate<Guid>> GetById(Guid id)
-        {
-            var entity = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Id == id);
+            var entityQ = _templatesRepository.GetQuerable().Where(x => x.Name == name);
+            if (!string.IsNullOrEmpty(language))
+            {
+                entityQ = entityQ.Where(x => x.Language == language);
+            }
+
+            var entity = await entityQ.FirstOrDefaultAsync();
             return CastToDefaultTemplate(entity);
         }
 
-        public async Task Create(ITemplate<Guid> template)
+        public async Task Create(ITemplate template)
         {
             try
             {
                 var entity = new Template
                 {
-                    Id = template.Id,
                     Name = template.Name,
                     Subject = template.Subject,
                     HtmlBodyTemplate = template.HtmlBodyTemplate,
@@ -50,7 +55,6 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
                     Tag = template.Tag,
                     Language = template.Language.Name,
                     FromAddress = template.FromAddress,
-                    IsHtml = template.IsHtml,
                     CreatedDateTime = DateTime.UtcNow
                 };
 
@@ -63,14 +67,14 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
             }
         }
 
-        public async Task Update(Guid id, ITemplate<Guid> templateUpdates)
+        public async Task Update(string name, ITemplate templateUpdates)
         {
             try
             {
-                var template = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Id == id);
+                var template = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Name == name);
                 if (template == null)
                 {
-                    var erroMessage = $"Failed to update template because wasn't fond template with id {id}";
+                    var erroMessage = $"Failed to update template because wasn't fond template with name {name}";
                     _logger.Error(erroMessage);
                     throw new ArgumentException(erroMessage);
                 }
@@ -82,7 +86,6 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
                 template.Tag = templateUpdates.Tag;
                 template.Language = templateUpdates.Language.Name;
                 template.FromAddress = templateUpdates.FromAddress;
-                template.IsHtml = templateUpdates.IsHtml;
 
                 await _templatesRepository.UpdateAsync(template);
             }
@@ -93,14 +96,14 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
             }
         }
 
-        public async Task Remove(Guid id)
+        public async Task Remove(string name)
         {
             try
             {
-                var template = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Id == id);
+                var template = await _templatesRepository.GetQuerable().FirstOrDefaultAsync(x => x.Name == name);
                 if (template == null)
                 {
-                    var erroMessage = $"Failed to delete template because wasn't fond template with id {id}";
+                    var erroMessage = $"Failed to delete template because wasn't fond template with name {name}";
                     _logger.Error(erroMessage);
                     throw new ArgumentException(erroMessage);
                 }
@@ -113,11 +116,10 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
             }
         }
 
-        private DefaultTemplate<Guid> CastToDefaultTemplate(Template template)
+        private DefaultTemplate CastToDefaultTemplate(Template template)
         {
-            return new DefaultTemplate<Guid>
+            return new DefaultTemplate
             {
-                Id = template.Id,
                 Name = template.Name,
                 Subject = template.Subject,
                 HtmlBodyTemplate = template.HtmlBodyTemplate,
@@ -125,8 +127,7 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
                 Priority = CastToPriority(template.Priority),
                 Tag = template.Tag,
                 Language = new CultureInfo(template.Language),
-                FromAddress = template.FromAddress,
-                IsHtml = template.IsHtml
+                FromAddress = template.FromAddress
             };
         }
 

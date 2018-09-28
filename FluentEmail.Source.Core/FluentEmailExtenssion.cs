@@ -9,22 +9,25 @@ namespace FluentEmail.Source.Core
     {
         private static readonly ILog Logger = LogProvider.GetLogger(typeof(FluentEmailExtenssion));
 
-        public static IFluentEmail UseTemplate<TKey>(this IFluentEmail fluentEmail, Func<ITemplate<TKey>> getTemplate, bool isBodyHtml = false)
+        public static IFluentEmail UseTemplate(this IFluentEmail fluentEmail, Func<ITemplate> getTemplate)
         {
             try
             {
+                var errorMessage = "Wasn't set template";
+                if (getTemplate == null)
+                {
+                    Logger.Error(errorMessage);
+                    throw new ArgumentNullException(nameof(getTemplate), errorMessage);
+                }
                 var template = getTemplate();
-
-                if (!string.IsNullOrEmpty(template.HtmlBodyTemplate))
+                if (template == null)
                 {
-                    fluentEmail.Body(template.HtmlBodyTemplate, isBodyHtml);
+                    Logger.Error(errorMessage);
+                    throw new ArgumentNullException(nameof(template), errorMessage);
                 }
 
-                if (!string.IsNullOrEmpty(template.PlainBodyTemplate))
-                {
-                    fluentEmail.PlaintextAlternativeBody(template.PlainBodyTemplate);
-                }
-
+                if (!string.IsNullOrEmpty(template.HtmlBodyTemplate)) fluentEmail.Body(template.HtmlBodyTemplate, true);
+                if (!string.IsNullOrEmpty(template.PlainBodyTemplate)) fluentEmail.PlaintextAlternativeBody(template.PlainBodyTemplate);
                 fluentEmail = FillFluentEmail(template, fluentEmail);
 
                 return fluentEmail;
@@ -36,22 +39,41 @@ namespace FluentEmail.Source.Core
             }
         }
 
-        public static IFluentEmail UseTemplate<TKey, TBodyModel, TPlainModel>(this IFluentEmail fluentEmail, Func<ITemplate<TKey>> getTemplate, TBodyModel bodyModel, TPlainModel plainModel, bool isBodyHtml = true)
+        public static IFluentEmail UseTemplate<TBodyModel, TPlainModel>(this IFluentEmail fluentEmail, Func<ITemplate> getTemplate, TBodyModel htmlModel, TPlainModel plainModel)
         {
             try
             {
+                string errorMessage;
+                if (getTemplate == null)
+                {
+                    errorMessage = "Wasn't set template";
+                    Logger.Error(errorMessage);
+                    throw new ArgumentNullException(nameof(getTemplate), errorMessage);
+                }
                 var template = getTemplate();
-
-                if (!string.IsNullOrEmpty(template.HtmlBodyTemplate))
+                if (template == null)
                 {
-                    fluentEmail.UsingTemplate(template.HtmlBodyTemplate, bodyModel, isBodyHtml);
+                    errorMessage = "Wasn't set template";
+                    Logger.Error(errorMessage);
+                    throw new ArgumentNullException(nameof(getTemplate), errorMessage);
                 }
 
-                if (!string.IsNullOrEmpty(template.PlainBodyTemplate))
+                if (htmlModel == null)
                 {
-                    fluentEmail.PlaintextAlternativeUsingTemplate(template.PlainBodyTemplate, plainModel);
+                    errorMessage = "Wasn't set html model";
+                    Logger.Error(errorMessage);
+                    throw new ArgumentNullException(nameof(htmlModel), errorMessage);
                 }
 
+                if (plainModel == null)
+                {
+                    errorMessage = "Wasn't set plain model";
+                    Logger.Error(errorMessage);
+                    throw new ArgumentNullException(nameof(plainModel), errorMessage);
+                }
+
+                if (!string.IsNullOrEmpty(template.HtmlBodyTemplate)) fluentEmail.UsingTemplate(template.HtmlBodyTemplate, htmlModel);
+                if (!string.IsNullOrEmpty(template.PlainBodyTemplate)) fluentEmail.PlaintextAlternativeUsingTemplate(template.PlainBodyTemplate, plainModel);
                 fluentEmail = FillFluentEmail(template, fluentEmail);
 
                 return fluentEmail;
@@ -64,62 +86,7 @@ namespace FluentEmail.Source.Core
             }
         }
 
-        public static IFluentEmail UseTemplateWithPlainModel<TKey, TPlainModel>(this IFluentEmail fluentEmail, Func<ITemplate<TKey>> getTemplate, TPlainModel plainModel, bool isBodyHtml = false)
-        {
-            try
-            {
-                var template = getTemplate();
-
-                if (!string.IsNullOrEmpty(template.HtmlBodyTemplate))
-                {
-                    fluentEmail.Body(template.HtmlBodyTemplate, isBodyHtml);
-                }
-
-                if (!string.IsNullOrEmpty(template.PlainBodyTemplate))
-                {
-                    fluentEmail.PlaintextAlternativeUsingTemplate(template.PlainBodyTemplate, plainModel);
-                }
-
-                fluentEmail = FillFluentEmail(template, fluentEmail);
-
-                return fluentEmail;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Failed to apply template");
-                throw;
-            }
-        }
-
-        public static IFluentEmail UseTemplateWithBodyModel<TKey, TBodyModel>(this IFluentEmail fluentEmail, Func<ITemplate<TKey>> getTemplate, TBodyModel bodyModel, bool isBodyHtml = true)
-        {
-            try
-            {
-                var template = getTemplate();
-
-                if (!string.IsNullOrEmpty(template.HtmlBodyTemplate))
-                {
-                    fluentEmail.UsingTemplate(template.HtmlBodyTemplate, bodyModel, isBodyHtml);
-                }
-
-                if (!string.IsNullOrEmpty(template.PlainBodyTemplate))
-                {
-                    fluentEmail.PlaintextAlternativeBody(template.PlainBodyTemplate);
-                }
-
-                fluentEmail = FillFluentEmail(template, fluentEmail);
-
-                return fluentEmail;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Failed to apply template");
-                throw;
-            }
-
-        }
-
-        private static IFluentEmail FillFluentEmail<TKey>(ITemplate<TKey> template, IFluentEmail fluentEmail)
+        private static IFluentEmail FillFluentEmail(ITemplate template, IFluentEmail fluentEmail)
         {
             if (!string.IsNullOrEmpty(template.Subject))
             {

@@ -2,10 +2,10 @@
 
 namespace FluentEmail.Source.Core.Interfaces
 {
-    public interface ITemplatesWriter<TKey>
+    public interface ITemplatesWriter
     {
-        Task Create(ITemplate<TKey> template);
-        Task Update(TKey id, ITemplate<TKey> templateUpdates);
-        Task Remove(TKey id);
+        Task Create(ITemplate template);
+        Task Update(string name, ITemplate templateUpdates);
+        Task Remove(string name);
     }
 }
