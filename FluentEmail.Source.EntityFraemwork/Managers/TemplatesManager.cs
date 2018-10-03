@@ -78,7 +78,6 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
                     _logger.Error(erroMessage);
                     throw new ArgumentException(erroMessage);
                 }
-                template.Name = templateUpdates.Name;
                 template.Subject = templateUpdates.Subject;
                 template.HtmlBodyTemplate = templateUpdates.HtmlBodyTemplate;
                 template.PlainBodyTemplate = templateUpdates.PlainBodyTemplate;
