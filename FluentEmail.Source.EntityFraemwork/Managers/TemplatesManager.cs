@@ -22,19 +22,19 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
             _templatesRepository = templatesRepository;
         }
 
-        public async Task<ITemplate> GetByName(string name, string language = null)
+        public async Task<ITemplate> GetByName(string name, CultureInfo language = null)
         {
             if (string.IsNullOrEmpty(name))
             {
-                var errorMessage = "Wasn't set name of template";
+                var errorMessage = "The template name wasn't set";
                 _logger.Error(errorMessage);
                 throw new ArgumentNullException(nameof(name), errorMessage);
             }
 
             var entityQ = _templatesRepository.GetQuerable().Where(x => x.Name == name);
-            if (!string.IsNullOrEmpty(language))
+            if (language != null)
             {
-                entityQ = entityQ.Where(x => x.Language == language);
+                entityQ = entityQ.Where(x => x.Language == language.Name);
             }
 
             var entity = await entityQ.FirstOrDefaultAsync();

@@ -22,7 +22,8 @@ namespace FluentEmail.Source.Simple
         static Program()
         {
             var optionsBuilder = new DbContextOptionsBuilder<TemplatesDbContext>();
-            optionsBuilder.UseSqlServer("Server=POTOTSKY\\SQLEXPRESS;Database=Templates;Trusted_Connection=True;MultipleActiveResultSets=True;Integrated Security=true");
+            //optionsBuilder.UseInMemoryDatabase("Templates");
+            optionsBuilder.UseSqlServer("Server=POTOTSKY\\SQLEXPRESS;Database=Email2;Trusted_Connection=True;MultipleActiveResultSets=True;Integrated Security=true");
             var context = new TemplatesDbContext(optionsBuilder.Options);
             context.Database.EnsureCreated();
 
@@ -30,23 +31,33 @@ namespace FluentEmail.Source.Simple
             TemplatesManager = new TemplatesManager(templatesRepository);
         }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
 
-            var template = new DefaultTemplate
+            ITemplate template = new DefaultTemplate
             {
                 Name = "test template 1",
                 Subject = "subject of tests template",
                 HtmlBodyTemplate = "body of tests template",
                 PlainBodyTemplate = "hi)",
                 Priority = Priority.Normal,
-                Tag = "test tag",
+                Tag = "test tag updated",
                 Language = CultureInfo.CurrentCulture,
                 FromAddress = "test@gmail.com"
             };
 
-            CreateTemplate(template).Wait();
-            GetAndSentTemplate(template.Name).Wait();
+            await CreateTemplate(template);
+            template = await GetTemplate(template.Name);
+            await Send(template);
+
+            template.HtmlBodyTemplate = "updated on new text)";
+            template.Subject = "subject was updated too";
+
+            await Update(template.Name, template);
+            template = await GetTemplate(template.Name);
+            await Send(template);
+
+            await Remove(template.Name);
         }
 
         private static async Task CreateTemplate(ITemplate template)
@@ -61,17 +72,26 @@ namespace FluentEmail.Source.Simple
                 Host = "smtp.gmail.com",
                 Port = 587,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("test1@cactussoft.com", "1234"),
+                Credentials = new NetworkCredential("kirill.potocki@gmail.com", "PSS30004"),
                 EnableSsl = true
             }));
 
-            await email.UseTemplate(() => template).To("test1@cactussoft.com").SendAsync();
+            await email.UseTemplate(() => template).To("kirill.pototsky@cactussoft.biz").SendAsync();
         }
 
-        private static async Task GetAndSentTemplate(string templateName)
+        private static async Task<ITemplate> GetTemplate(string templateName)
         {
-            var template = await TemplatesManager.GetByName(templateName);
-            await Send(template);
+            return await TemplatesManager.GetByName(templateName);
+        }
+
+        private static async Task Update(string templateName, ITemplate templateUpdates)
+        {
+            await TemplatesManager.Update(templateName, templateUpdates);
+        }
+
+        private static async Task Remove(string templateName)
+        {
+            await TemplatesManager.Remove(templateName);
         }
     }
 }
