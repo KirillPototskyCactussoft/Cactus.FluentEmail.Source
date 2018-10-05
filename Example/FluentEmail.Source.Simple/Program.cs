@@ -22,8 +22,7 @@ namespace FluentEmail.Source.Simple
         static Program()
         {
             var optionsBuilder = new DbContextOptionsBuilder<TemplatesDbContext>();
-            //optionsBuilder.UseInMemoryDatabase("Templates");
-            optionsBuilder.UseSqlServer("Server=POTOTSKY\\SQLEXPRESS;Database=Email2;Trusted_Connection=True;MultipleActiveResultSets=True;Integrated Security=true");
+            optionsBuilder.UseInMemoryDatabase("Templates");
             var context = new TemplatesDbContext(optionsBuilder.Options);
             context.Database.EnsureCreated();
 
@@ -33,7 +32,6 @@ namespace FluentEmail.Source.Simple
 
         static async Task Main(string[] args)
         {
-
             ITemplate template = new DefaultTemplate
             {
                 Name = "test template 1",

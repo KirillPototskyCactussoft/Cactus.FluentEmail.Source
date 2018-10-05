@@ -9,32 +9,7 @@ namespace FluentEmail.Source.Core
     {
         private static readonly ILog Logger = LogProvider.GetLogger(typeof(FluentEmailExtenssion));
 
-        public static IFluentEmail UseTemplate(this IFluentEmail fluentEmail, Func<ITemplate> getTemplate)
-        {
-            try
-            {
-                var template = getTemplate?.Invoke();
-                if (template == null)
-                {
-                    var errorMessage = "The template wasn't set";
-                    Logger.Error(errorMessage);
-                    throw new ArgumentNullException(nameof(getTemplate), errorMessage);
-                }
-
-                if (!string.IsNullOrEmpty(template.HtmlBodyTemplate)) fluentEmail.Body(template.HtmlBodyTemplate, true);
-                if (!string.IsNullOrEmpty(template.PlainBodyTemplate)) fluentEmail.PlaintextAlternativeBody(template.PlainBodyTemplate);
-                fluentEmail = FillFluentEmail(template, fluentEmail);
-
-                return fluentEmail;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Failed to apply template");
-                throw;
-            }
-        }
-
-        public static IFluentEmail UseTemplate<THtmlModel, TPlainModel>(this IFluentEmail fluentEmail, Func<ITemplate> getTemplate, THtmlModel htmlModel, TPlainModel plainModel)
+        public static IFluentEmail UseTemplate(this IFluentEmail fluentEmail, Func<ITemplate> getTemplate, object htmlModel = null, object plainModel = null)
         {
             try
             {
@@ -47,23 +22,21 @@ namespace FluentEmail.Source.Core
                     throw new ArgumentNullException(nameof(getTemplate), errorMessage);
                 }
 
-                if (htmlModel == null || string.IsNullOrEmpty(template.HtmlBodyTemplate))
+                if (htmlModel != null && string.IsNullOrEmpty(template.HtmlBodyTemplate))
                 {
-                    errorMessage = "Html model or html body wasn't set";
+                    errorMessage = "Html model was set but html template wasn't set";
                     Logger.Error(errorMessage);
-                    throw new ArgumentNullException(nameof(htmlModel), errorMessage);
+                    throw new ArgumentNullException(nameof(template.HtmlBodyTemplate), errorMessage);
                 }
 
-                if (plainModel == null || string.IsNullOrEmpty(template.PlainBodyTemplate))
+                if (plainModel != null && string.IsNullOrEmpty(template.PlainBodyTemplate))
                 {
-                    errorMessage = "Plain model or plain body wasn't set";
+                    errorMessage = "Plain model was set but plain template wasn't set";
                     Logger.Error(errorMessage);
-                    throw new ArgumentNullException(nameof(plainModel), errorMessage);
+                    throw new ArgumentNullException(nameof(template.PlainBodyTemplate), errorMessage);
                 }
 
-                fluentEmail.UsingTemplate(template.HtmlBodyTemplate, htmlModel);
-                fluentEmail.PlaintextAlternativeUsingTemplate(template.PlainBodyTemplate, plainModel);
-                fluentEmail = FillFluentEmail(template, fluentEmail);
+                fluentEmail = FillFluentEmail(template, fluentEmail, htmlModel, plainModel);
 
                 return fluentEmail;
 
@@ -75,73 +48,32 @@ namespace FluentEmail.Source.Core
             }
         }
 
-        public static IFluentEmail UseTemplateWithHtmlModel<THtmlModel>(this IFluentEmail fluentEmail, Func<ITemplate> getTemplate, THtmlModel htmlModel)
+        private static IFluentEmail FillFluentEmail(ITemplate template, IFluentEmail fluentEmail, object htmlModel = null, object plainModel = null)
         {
-            try
+            if (!string.IsNullOrEmpty(template.HtmlBodyTemplate))
             {
-                var errorMessage = "The template wasn't set";
-                var template = getTemplate?.Invoke();
-                if (template == null)
+                if (htmlModel != null)
                 {
-                    Logger.Error(errorMessage);
-                    throw new ArgumentNullException(nameof(getTemplate), errorMessage);
+                    fluentEmail.UsingTemplate(template.HtmlBodyTemplate, htmlModel);
                 }
-
-                if (htmlModel == null || string.IsNullOrEmpty(template.HtmlBodyTemplate))
+                else
                 {
-                    errorMessage = "Html model or html body wasn't set";
-                    Logger.Error(errorMessage);
-                    throw new ArgumentNullException(nameof(htmlModel), errorMessage);
+                    fluentEmail.Body(template.HtmlBodyTemplate, true);
                 }
-
-                fluentEmail.UsingTemplate(template.HtmlBodyTemplate, htmlModel);
-                if (!string.IsNullOrEmpty(template.PlainBodyTemplate)) fluentEmail.PlaintextAlternativeBody(template.PlainBodyTemplate);
-                fluentEmail = FillFluentEmail(template, fluentEmail);
-
-                return fluentEmail;
             }
-            catch (Exception ex)
+
+            if (!string.IsNullOrEmpty(template.PlainBodyTemplate))
             {
-                Logger.Error(ex, "Failed to apply template");
-                throw;
-            }
-        }
-
-        public static IFluentEmail UseTemplateWithPlainModel<TPlainModel>(this IFluentEmail fluentEmail, Func<ITemplate> getTemplate, TPlainModel plainModel)
-        {
-            try
-            {
-                var errorMessage = "The template wasn't set";
-                var template = getTemplate?.Invoke();
-                if (template == null)
+                if (plainModel != null)
                 {
-                    Logger.Error(errorMessage);
-                    throw new ArgumentNullException(nameof(getTemplate), errorMessage);
+                    fluentEmail.PlaintextAlternativeUsingTemplate(template.PlainBodyTemplate, plainModel);
                 }
-
-                if (plainModel == null || string.IsNullOrEmpty(template.PlainBodyTemplate))
+                else
                 {
-                    errorMessage = "Plain model or plain body wasn't set";
-                    Logger.Error(errorMessage);
-                    throw new ArgumentNullException(nameof(plainModel), errorMessage);
+                    fluentEmail.PlaintextAlternativeBody(template.PlainBodyTemplate);
                 }
-
-                if (!string.IsNullOrEmpty(template.HtmlBodyTemplate)) fluentEmail.Body(template.HtmlBodyTemplate, true);
-
-                fluentEmail.PlaintextAlternativeUsingTemplate(template.PlainBodyTemplate, plainModel);
-                fluentEmail = FillFluentEmail(template, fluentEmail);
-
-                return fluentEmail;
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Failed to apply template");
-                throw;
-            }
-        }
 
-        private static IFluentEmail FillFluentEmail(ITemplate template, IFluentEmail fluentEmail)
-        {
             if (!string.IsNullOrEmpty(template.Subject))
             {
                 fluentEmail.Subject(template.Subject);
