@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{078B67EF-8063-4ED2-9484-B6848676344F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{41D378F0-0469-4A2C-9FA0-9B170243DC7F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.FluentEmail.Source.Simple", "Example\Cactus.FluentEmail.Source.Simple\Cactus.FluentEmail.Source.Simple.csproj", "{E2441E5F-2A71-4561-8C2A-4CDE65A85E8F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.FluentEmail.Source.Core.Tests", "Tests\Cactus.FluentEmail.Source.Core.Tests\Cactus.FluentEmail.Source.Core.Tests.csproj", "{8C88D96F-77BA-4EAD-B9CB-5E3F8934DEDB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.FluentEmail.Source.EntityFraemwork.Tests", "Tests\Cactus.FluentEmail.Source.EntityFraemwork.Tests\Cactus.FluentEmail.Source.EntityFraemwork.Tests.csproj", "{B805652E-D823-47B0-9B30-C34985327A2A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.FluentEmail.Source.Core", "Cactus.FluentEmail.Source.Core\Cactus.FluentEmail.Source.Core.csproj", "{AE13151D-6D33-476A-892F-91BB50748AC6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cactus.FluentEmail.Source.EntityFraemwork", "Cactus.FluentEmail.Source.EntityFraemwork\Cactus.FluentEmail.Source.EntityFraemwork.csproj", "{1AFCAAA0-0FC3-4859-AFCF-0AD37D8A3DCA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E2441E5F-2A71-4561-8C2A-4CDE65A85E8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2441E5F-2A71-4561-8C2A-4CDE65A85E8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2441E5F-2A71-4561-8C2A-4CDE65A85E8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2441E5F-2A71-4561-8C2A-4CDE65A85E8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C88D96F-77BA-4EAD-B9CB-5E3F8934DEDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C88D96F-77BA-4EAD-B9CB-5E3F8934DEDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C88D96F-77BA-4EAD-B9CB-5E3F8934DEDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C88D96F-77BA-4EAD-B9CB-5E3F8934DEDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B805652E-D823-47B0-9B30-C34985327A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B805652E-D823-47B0-9B30-C34985327A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B805652E-D823-47B0-9B30-C34985327A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B805652E-D823-47B0-9B30-C34985327A2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE13151D-6D33-476A-892F-91BB50748AC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE13151D-6D33-476A-892F-91BB50748AC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE13151D-6D33-476A-892F-91BB50748AC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE13151D-6D33-476A-892F-91BB50748AC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AFCAAA0-0FC3-4859-AFCF-0AD37D8A3DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AFCAAA0-0FC3-4859-AFCF-0AD37D8A3DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AFCAAA0-0FC3-4859-AFCF-0AD37D8A3DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AFCAAA0-0FC3-4859-AFCF-0AD37D8A3DCA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E2441E5F-2A71-4561-8C2A-4CDE65A85E8F} = {078B67EF-8063-4ED2-9484-B6848676344F}
+		{8C88D96F-77BA-4EAD-B9CB-5E3F8934DEDB} = {41D378F0-0469-4A2C-9FA0-9B170243DC7F}
+		{B805652E-D823-47B0-9B30-C34985327A2A} = {41D378F0-0469-4A2C-9FA0-9B170243DC7F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8D256E0D-C90B-4D2B-918D-C55A25DC26C4}
+	EndGlobalSection
+EndGlobal
