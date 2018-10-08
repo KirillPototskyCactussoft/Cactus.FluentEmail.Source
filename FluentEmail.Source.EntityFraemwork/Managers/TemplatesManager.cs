@@ -38,7 +38,7 @@ namespace FluentEmail.Source.EntityFraemwork.Managers
             }
 
             var entity = await entityQ.FirstOrDefaultAsync();
-            return CastToDefaultTemplate(entity);
+            return entity != null ? CastToDefaultTemplate(entity) : null;
         }
 
         public async Task Create(ITemplate template)
